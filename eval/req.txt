@@ -1,0 +1,79 @@
+======================================================================
+KRONOS MODEL EVALUATION REPORT
+======================================================================
+
+CONFIGURATION
+--------------------
+Model: d:\dev\Kronos\output\600740_5min_20260225\basemodel\best_model
+Test Data: d:\dev\Kronos\download\data\600740_5min_20260225.csv
+Lookback Length: 512
+Prediction Length: 48
+Total Sequences Evaluated: 6
+
+REGRESSION METRICS (Continuous Value Prediction)
+--------------------------------------------------
+These metrics evaluate the model's ability to predict continuous values like stock prices and volumes.
+
+MAE (Mean Absolute Error): Average magnitude of errors without considering direction
+  Value: 0.125903
+  Interpretation: On average, predictions deviate by 0.125903 units
+
+MSE (Mean Squared Error): Penalizes larger errors more heavily than smaller ones
+  Value: 0.022428
+  Interpretation: Larger errors are penalized quadratically, indicating extreme deviations
+
+RMSE (Root Mean Squared Error): Square root of MSE, in the same units as target
+  Value: 0.136323
+  Interpretation: Similar to MSE but in original units, showing severity of errors
+
+MAPE (Mean Absolute Percentage Error): Relative error as percentage
+  Value: 0.026892
+  Interpretation: Relative error, especially useful for different price scales
+
+R² (Coefficient of Determination): Proportion of variance explained by model
+  Value: -9.603281
+  Interpretation: How well the model explains the variability of the target
+
+IC (Information Coefficient): Pearson correlation of returns
+  Value: 0.072150
+  Interpretation: Linear correlation between predicted and actual returns
+
+Rank IC (Rank Information Coefficient): Spearman correlation of returns
+  Value: 0.015244
+  Interpretation: Rank correlation, robust to outliers
+
+IR (Information Ratio): Mean(IC) / Std(IC)
+  Value: 0.667221
+  Interpretation: Stability of the prediction signal (Rolling IC based)
+
+CLASSIFICATION METRICS (Direction Prediction)
+--------------------------------------------------
+These metrics evaluate the model's ability to predict price direction (up/down).
+
+Accuracy: Overall proportion of correct direction predictions
+  Value: 0.666667
+  Interpretation: 66.67% of direction predictions were correct
+
+Precision: Proportion of positive identifications that were actually correct
+  Value: 0.368056
+  Interpretation: Of all upward moves predicted, this fraction was actually up
+
+Recall: Proportion of actual positives identified correctly
+  Value: 0.084887
+  Interpretation: Of all actual upward moves, this fraction was caught
+
+F1-Score: Harmonic mean of precision and recall
+  Value: 0.123914
+  Interpretation: Balance between precision and recall
+
+AUC-ROC: Area Under the ROC Curve
+  Value: 0.507672
+  Interpretation: Ability to distinguish between up/down movements
+
+Kappa Coefficient: Agreement adjusted for chance
+  Value: 0.018652
+  Interpretation: Performance compared to random guessing
+
+======================================================================
+REPORT GENERATED
+======================================================================
