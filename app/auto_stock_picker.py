@@ -4,7 +4,7 @@
 自动选股脚本（基于 predict/prediction_cn_markets_min.py）
 
 用法示例:
-    python app/auto_stock_picker.py --check_date 2026-02-27 --T 0.5 --samples 5 --top_n 20
+    python auto_stock_picker.py --check_date 2026-03-02 --T 0.5 --samples 1 --top_n 100
 
 说明:
  - 遍历主板（上海 600/601/603 开头，深圳 000 开头）A 股代码

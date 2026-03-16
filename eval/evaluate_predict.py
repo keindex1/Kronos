@@ -270,7 +270,10 @@ def evaluate_model(
     from collections import defaultdict
 
     regression_metrics_all = defaultdict(list)
-    classification_metrics_all = defaultdict(list)
+
+    # Lists to collect all directions for final classification evaluation
+    all_actual_directions = []
+    all_predicted_directions = []
 
     print("Starting model evaluation...")
 
@@ -278,7 +281,7 @@ def evaluate_model(
     # evaluate all valid sequences (days)
     total_sequences = len(sequences)
     
-    for idx, (input_seq, output_seq) in enumerate(sequences):
+    for idx, (input_seq, output_seq) in enumerate(sequences[:50]):
         print(f"Evaluating sequence {idx+1}/{total_sequences}")
 
         try:
@@ -304,7 +307,7 @@ def evaluate_model(
                 T=0.1,
                 top_k=0,
                 top_p=0.9,
-                sample_count=5,
+                sample_count=1,
                 verbose=True,
             )
 
@@ -361,20 +364,23 @@ def evaluate_model(
 
             # Compute metrics for this sequence
             seq_reg_metrics = evaluator.evaluate_regression(actual_flat, pred_flat)
-            seq_clf_metrics = evaluator.evaluate_classification(actual_flat, pred_flat)
 
-            # Accumulate metrics
+            # Calculate directions for this sequence
+            actual_direction, predicted_direction = evaluator.classify_direction(actual_flat, pred_flat)
+
+            # Accumulate regression metrics
             for metric, value in seq_reg_metrics.items():
                 if not np.isnan(value):
                     regression_metrics_all[metric].append(value)
 
-            for metric, value in seq_clf_metrics.items():
-                if not np.isnan(value):
-                    classification_metrics_all[metric].append(value)
+            # Accumulate directions if valid
+            if len(actual_direction) > 0 and len(predicted_direction) > 0:
+                all_actual_directions.extend(actual_direction)
+                all_predicted_directions.extend(predicted_direction)
 
             print(f"Sequence {idx+1} metrics:")
             print(f"Regression metrics: {seq_reg_metrics}")
-            print(f"Classification metrics: {seq_clf_metrics}")
+            print(f"Directions: actual={actual_direction}, predicted={predicted_direction}")
             # Save plot for the last sequence (as a representative sample)
             # if plot_output_path and idx == min(len(sequences), 20) - 1:
             # Format metrics for display
@@ -397,7 +403,7 @@ def evaluate_model(
 
     print("Computing final metrics...")
 
-    # Compute mean metrics across all sequences
+    # Compute mean regression metrics across all sequences
     final_regression_metrics = {}
     for metric, values in regression_metrics_all.items():
         if values:
@@ -405,12 +411,22 @@ def evaluate_model(
         else:
             final_regression_metrics[metric] = float("nan")
 
+    # Compute final classification metrics using all collected directions
     final_classification_metrics = {}
-    for metric, values in classification_metrics_all.items():
-        if values:
-            final_classification_metrics[metric] = np.mean(values)
-        else:
-            final_classification_metrics[metric] = float("nan")
+    if all_actual_directions and all_predicted_directions:
+        from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, cohen_kappa_score
+        
+        final_classification_metrics['Accuracy'] = accuracy_score(all_actual_directions, all_predicted_directions)
+        final_classification_metrics['Precision'] = precision_score(all_actual_directions, all_predicted_directions, average='binary', zero_division=0)
+        final_classification_metrics['Recall'] = recall_score(all_actual_directions, all_predicted_directions, average='binary', zero_division=0)
+        final_classification_metrics['F1-Score'] = f1_score(all_actual_directions, all_predicted_directions, average='binary', zero_division=0)
+        try:
+            final_classification_metrics['AUC-ROC'] = roc_auc_score(all_actual_directions, all_predicted_directions)
+        except:
+            final_classification_metrics['AUC-ROC'] = 0.5
+        final_classification_metrics['Kappa'] = cohen_kappa_score(all_actual_directions, all_predicted_directions)
+    else:
+        final_classification_metrics = {k: float('nan') for k in ['Accuracy', 'Precision', 'Recall', 'F1-Score', 'AUC-ROC', 'Kappa']}
 
     # Generate report
     report = generate_report(

@@ -52,26 +52,25 @@ class ModelEvaluator:
         Returns:
             Tuple of actual and predicted directions (1 for up, 0 for down)
         """
-        # Calculate returns
-        actual_returns = np.diff(actual, prepend=actual[0])
-        predicted_returns = np.diff(predicted, prepend=predicted[0])
+        # Calculate direction based on first and last elements only
+        if len(actual) < 2 or len(predicted) < 2:
+            print("WARNING: classify_direction - input arrays too short")
+            return np.array([]), np.array([])
         
-        # Ensure alignment
-        min_len = min(len(actual_returns), len(predicted_returns))
-        actual_returns = actual_returns[:min_len]
-        predicted_returns = predicted_returns[:min_len]
+        # Calculate returns using only first and last elements
+        actual_return = actual[-1] - actual[0]
+        predicted_return = predicted[-1] - predicted[0]
         
-        # Create common mask for valid values in both
-        mask = ~(np.isnan(actual_returns) | np.isnan(predicted_returns))
+        # Check for NaN values
+        if np.isnan(actual_return) or np.isnan(predicted_return):
+            print("WARNING: classify_direction - return value is NaN")
+            print(f"actual_return: {actual_return}, predicted_return: {predicted_return}")
+            return np.array([]), np.array([])
         
-        if np.sum(mask) == 0:
-            print("WARNING: classify_direction - all diffs are NaN")
-            print(f"actual_returns sample: {actual_returns[:5]}")
-            print(f"predicted_returns sample: {predicted_returns[:5]}")
+        # Calculate directions (1 for up, 0 for down)
+        actual_direction = np.array([int(actual_return > 0)])
+        predicted_direction = np.array([int(predicted_return > 0)])
         
-        # Calculate directions only for valid, aligned data points
-        actual_direction = (actual_returns[mask] > 0).astype(int)
-        predicted_direction = (predicted_returns[mask] > 0).astype(int)
         
         return actual_direction, predicted_direction
     
