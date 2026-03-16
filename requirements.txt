@@ -3,7 +3,7 @@ pandas
 torch>=2.0.0
 
 einops==0.8.1
-huggingface_hub
+modelscope
 matplotlib
 pandas
 tqdm==4.67.1

@@ -34,8 +34,8 @@ training:
 # model path configuration
 model_paths:
   # pretrained model path
-  pretrained_tokenizer: "../pretrained/Kronos-Tokenizer-large"
-  pretrained_predictor: "../pretrained/Kronos-large"
+  pretrained_tokenizer: "../pretrained/Kronos-Tokenizer-base"
+  pretrained_predictor: "../pretrained/Kronos-base"
   
   # experiment name - other paths will be generated based on this
   exp_name: "600459_1day_20260218"
