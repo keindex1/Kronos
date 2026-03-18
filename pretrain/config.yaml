@@ -1,0 +1,101 @@
+# Pretraining configuration for Kronos
+# 用于 Kronos 预训练的配置文件
+
+data:
+  # Directory containing multiple CSV files for pretraining
+  # 包含多个 CSV 文件的目录，用于预训练
+  data_dir: "D:/dev/Kronos/download/data/"
+  data_path: "D:/dev/Kronos/download/data/"  # For compatibility with config_loader
+  
+  lookback_window: 512
+  predict_window: 48
+  max_context: 512
+  clip: 5.0
+  
+  # Dataset split ratio
+  # 数据集划分比例
+  train_ratio: 0.9
+  val_ratio: 0.1
+  test_ratio: 0.0
+  
+  # Data loading control
+  # 数据加载控制
+  max_files: -1  # -1 means load all files, positive number limits the count / -1 表示加载所有文件，正数限制数量
+  sample_per_file: 1000  # Number of samples to draw from each file / 从每个文件采样的样本数
+  max_total_records: 300000  # Maximum total records to prevent memory overflow / 最大总记录数防止内存溢出
+
+training:
+  # Training epochs for pretraining (typically more than finetuning)
+  # 预训练轮次（通常比微调更多）
+  tokenizer_epochs: 50
+  basemodel_epochs: 100
+  
+  batch_size: 64  # Smaller batch size for pretraining due to larger data
+  log_interval: 100
+  num_workers: 8  # More workers for larger dataset
+  seed: 42
+  
+  # Learning rates for pretraining
+  # 预训练学习率
+  tokenizer_learning_rate: 0.0002
+  predictor_learning_rate: 0.00001  # Lower LR for stable pretraining
+  
+  adam_beta1: 0.9
+  adam_beta2: 0.95
+  adam_weight_decay: 0.1
+  
+  # Gradient accumulation steps
+  # 梯度累积步数
+  accumulation_steps: 2
+
+# Model path configuration
+# 模型路径配置
+model_paths:
+  # For pretraining, these paths are used as reference for model architecture
+  # 预训练时，这些路径仅用作模型架构参考
+  pretrained_tokenizer: "../pretrained/Kronos-Tokenizer-2k"
+  pretrained_predictor: "../pretrained/Kronos-small"
+  
+  # Experiment name
+  # 实验名称
+  exp_name: "kronos_pretrain_multi_stocks"
+  base_path: "../output/pretrain/"
+
+  # Save paths - will be generated based on exp_name
+  # 保存路径 - 将基于 exp_name 自动生成
+  base_save_path: ""  # Auto-generated: ../output/pretrain/kronos_pretrain_multi_stocks
+  finetuned_tokenizer: ""  # Auto-generated
+  
+  tokenizer_save_name: "tokenizer"
+  basemodel_save_name: "basemodel"
+
+experiment:
+  name: "kronos_pretrain_multi_stocks"
+  description: "Pretraining Kronos on multiple stocks K-line data"
+  use_comet: false
+  
+  # Pretraining always trains both tokenizer and predictor
+  # 预训练总是同时训练 tokenizer 和 predictor
+  train_tokenizer: true
+  train_basemodel: true
+  
+  # Don't skip existing models for pretraining
+  # 预训练不跳过已有模型
+  skip_existing: false
+  
+  # IMPORTANT: Set to False for pretraining (random initialization)
+  # 重要：预训练时设为 False（随机初始化）
+  pre_trained_tokenizer: false
+  pre_trained_predictor: false
+
+# Device configuration
+# 设备配置
+device:
+  use_cuda: true
+  device_id: 0
+
+# Distributed training configuration
+# 分布式训练配置
+distributed:
+  use_ddp: false  # Set to true for multi-GPU training
+  backend: nccl
