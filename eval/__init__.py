@@ -1,14 +1,14 @@
 """
-Evaluation module for Kronos financial forecasting model.
+Evaluation module for the Kronos financial forecasting model.
 
-This package provides comprehensive evaluation tools for assessing model performance
-using both regression and classification metrics relevant to financial applications.
+This package contains:
+- evaluate_torch_optimized.py: PyTorch-based evaluator (optimized)
 """
 
-from .evaluate import ModelEvaluator, evaluate_predictions, evaluate_multiple_assets
+from .evaluate_torch_optimized import TorchModelEvaluator, evaluate_predictions, evaluate_multiple_assets
 
 __all__ = [
-    'ModelEvaluator',
+    'TorchModelEvaluator',
     'evaluate_predictions', 
     'evaluate_multiple_assets'
 ]

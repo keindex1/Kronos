@@ -7,7 +7,7 @@ download_stock_data.py
 用法:
     python download_stock_data.py --symbol 600977 --period 5min --days 30 --output data.csv
     python download_stock_data.py --symbol 000001 --period 1day --start 2024-01-01 --end 2024-12-31
-    python download_stock_data.py --symbol AAPL --source yfinance --period 1day --days 365
+    python download_stock_data.py --symbol 600821 --source baostock --period 5min --days 365
 
 支持的数据源:
     - akshare: 中国A股、港股数据

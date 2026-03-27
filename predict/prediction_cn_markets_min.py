@@ -35,8 +35,8 @@ save_dir = "./outputs"
 os.makedirs(save_dir, exist_ok=True)
 
 # Setting
-TOKENIZER_PRETRAINED = "D:/dev/Kronos/output/600740_5min_20260225/tokenizer/best_model"
-MODEL_PRETRAINED = "D:/dev/Kronos/output/600740_5min_20260225/basemodel/best_model"
+TOKENIZER_PRETRAINED = "D:/dev/Kronos/output/pretrain/kronos_pretrain_multi_stocks/tokenizer/best_tokenizer"
+MODEL_PRETRAINED = "D:/dev/Kronos/output/pretrain/kronos_pretrain_multi_stocks/basemodel/best_model"
 # TOKENIZER_PRETRAINED = "D:/dev/Kronos/pretrained/Kronos-Tokenizer-base"
 # MODEL_PRETRAINED = "D:/dev/Kronos/pretrained/Kronos-base"
 DEVICE = "cpu"  # "cuda:0"
@@ -45,7 +45,7 @@ LOOKBACK = 512
 PRED_LEN = 48  # 预测48个5分钟K线 (4小时)
 T = 0.5
 TOP_P = 0.9
-SAMPLE_COUNT = 5
+SAMPLE_COUNT = 1
 
 def format_stock_code(symbol: str) -> str:
     """Convert stock code to baostock format (e.g., 002947 -> sz.002947)"""

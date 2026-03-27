@@ -1,0 +1,97 @@
+# Small test configuration for Kronos pretraining
+# 用于 Kronos 预训练的小型测试配置
+
+data:
+  # Directory containing multiple CSV files for pretraining
+  # 包含多个 CSV 文件的目录，用于预训练
+  data_path: "../download/data/"
+  
+  lookback_window: 64  # Reduced for faster testing
+  predict_window: 16   # Reduced for faster testing
+  max_context: 64
+  clip: 5.0
+  
+  # Dataset split ratio
+  # 数据集划分比例
+  train_ratio: 0.8
+  val_ratio: 0.2
+  test_ratio: 0.0
+  
+  # Data loading control
+  # 数据加载控制
+  max_files: 1         # Only use 1 file for faster testing
+  sample_per_file: 50  # Reduced samples for faster testing
+  max_total_records: 1000  # Reduced for faster testing
+
+training:
+  # Training epochs for pretraining (reduced for testing)
+  # 预训练轮次（测试时减少）
+  tokenizer_epochs: 2   # Reduced for testing
+  basemodel_epochs: 2   # Reduced for testing
+  
+  batch_size: 4         # Reduced for testing
+  log_interval: 1       # Log every step
+  num_workers: 0        # Set to 0 for testing to avoid multiprocessing issues
+  seed: 42
+  
+  # Learning rates for pretraining
+  # 预训练学习率
+  tokenizer_learning_rate: 0.001
+  predictor_learning_rate: 0.001  # Lower LR for stable pretraining
+  
+  adam_beta1: 0.9
+  adam_beta2: 0.95
+  adam_weight_decay: 0.01
+  
+  # Gradient accumulation steps
+  # 梯度累积步数
+  accumulation_steps: 1
+
+# Model path configuration
+# 模型路径配置
+model_paths:
+  # For pretraining, these paths are used as reference for model architecture
+  # 预训练时，这些路径仅用作模型架构参考
+  pretrained_tokenizer_path: "../pretrained/Kronos-Tokenizer-2k"  # 临时路径，后续会被更新
+  pretrained_predictor_path: "../pretrained/Kronos-small"
+  
+  # Experiment name
+  # 实验名称
+  exp_name: "kronos_pretrain_test_small"
+  base_save_path: "../output/test_small/"
+  
+  # Specific save paths
+  # 具体保存路径
+  tokenizer_save_path: "../output/test_small/tokenizer/"
+  basemodel_save_path: "../output/test_small/basemodel/"
+
+experiment:
+  name: "kronos_pretrain_test_small"
+  description: "Small test pretraining Kronos on single stock K-line data"
+  use_comet: false
+  
+  # Pretraining always trains both tokenizer and predictor
+  # 预训练总是同时训练 tokenizer 和 predictor
+  train_tokenizer: true
+  train_basemodel: true
+  
+  # Don't skip existing models for pretraining
+  # 预训练不跳过已有模型
+  skip_existing: false
+  
+  # IMPORTANT: Set to False for pretraining (random initialization)
+  # 重要：预训练时设为 False（随机初始化）
+  pre_trained_tokenizer: false
+  pre_trained_predictor: false
+
+# Device configuration
+# 设备配置
+device:
+  use_cuda: true
+  device_id: 0
+
+# Distributed training configuration
+# 分布式训练配置
+distributed:
+  use_ddp: false  # Set to true for multi-GPU training
+  backend: nccl

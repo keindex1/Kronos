@@ -4,8 +4,8 @@
 data:
   # Directory containing multiple CSV files for pretraining
   # 包含多个 CSV 文件的目录，用于预训练
-  data_dir: "D:/dev/Kronos/download/data/"
-  data_path: "D:/dev/Kronos/download/data/"  # For compatibility with config_loader
+  data_dir: "../download/data/"
+  data_path: "../download/data/"  # For compatibility with config_loader
   
   lookback_window: 512
   predict_window: 48
@@ -27,18 +27,18 @@ data:
 training:
   # Training epochs for pretraining (typically more than finetuning)
   # 预训练轮次（通常比微调更多）
-  tokenizer_epochs: 50
-  basemodel_epochs: 100
+  tokenizer_epochs: 5
+  basemodel_epochs: 10
   
-  batch_size: 64  # Smaller batch size for pretraining due to larger data
-  log_interval: 100
+  batch_size: 8  # Smaller batch size for pretraining due to larger data
+  log_interval: 1
   num_workers: 8  # More workers for larger dataset
   seed: 42
   
   # Learning rates for pretraining
   # 预训练学习率
-  tokenizer_learning_rate: 0.0002
-  predictor_learning_rate: 0.00001  # Lower LR for stable pretraining
+  tokenizer_learning_rate: 0.02
+  predictor_learning_rate: 0.01  # Lower LR for stable pretraining
   
   adam_beta1: 0.9
   adam_beta2: 0.95

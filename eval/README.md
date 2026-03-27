@@ -1,27 +1,74 @@
-# Model Evaluation
+# Kronos Evaluation Module
 
-This module contains comprehensive evaluation tools for assessing the performance of the Kronos financial forecasting model. It includes both regression and classification metrics commonly used in financial prediction tasks.
+This module provides evaluation capabilities for the Kronos financial forecasting model. It includes both traditional sklearn-based evaluation and PyTorch-based evaluation implementations.
 
-## Features
+## Overview
 
-### Regression Metrics
-- **MAE (Mean Absolute Error)**: Measures average magnitude of errors without considering direction
-- **MSE (Mean Squared Error)**: Penalizes larger errors more heavily than smaller ones
-- **RMSE (Root Mean Squared Error)**: Square root of MSE, in the same units as the target variable
-- **MAPE (Mean Absolute Percentage Error)**: Relative error expressed as a percentage
-- **R² (Coefficient of Determination)**: Proportion of variance explained by the model
+The evaluation module offers comprehensive assessment of model performance for financial time series prediction tasks, with metrics specifically designed for financial applications:
 
-### Classification Metrics
-- **Accuracy**: Overall proportion of correct predictions
-- **Precision**: Proportion of positive identifications that were actually correct
-- **Recall**: Proportion of actual positives that were identified correctly
-- **F1-Score**: Harmonic mean of precision and recall
-- **AUC-ROC**: Area under the Receiver Operating Characteristic curve
-- **Kappa Coefficient**: Adjusts accuracy by accounting for agreement occurring by chance
+- **Regression metrics**: MAE, MSE, RMSE, MAPE, R²
+- **Financial metrics**: Information Coefficient (IC), Rank IC, Information Ratio (IR)
+- **Classification metrics**: Accuracy, Precision, Recall, F1-Score, AUC-ROC, Kappa
+
+## Available Evaluators
+
+### 1. Sklearn-based Evaluator (`evaluate.py`)
+The original evaluator using sklearn for all computations.
+
+### 2. PyTorch-based Evaluator (`evaluate_torch_optimized.py`)
+An optimized evaluator using PyTorch tensors for computation, allowing for better integration with deep learning workflows and GPU acceleration.
 
 ## Usage
 
-### Basic Evaluation
+### Basic Usage with PyTorch Evaluator
+
+```python
+import torch
+from evaluate_torch_optimized import evaluate_predictions
+
+# Example actual and predicted values
+actual = torch.tensor([100, 102, 101, 103, 105]).float()
+predicted = torch.tensor([101, 103, 100, 104, 104]).float()
+
+# Evaluate predictions
+results = evaluate_predictions(
+    y_true=actual,
+    y_pred=predicted,
+    print_results=True
+)
+```
+
+### Multiple Assets Evaluation
+
+```python
+from evaluate_torch_optimized import evaluate_multiple_assets
+
+assets_data = {
+    'AAPL': (actual_aapl, predicted_aapl),
+    'GOOGL': (actual_googl, predicted_googl),
+}
+
+all_results = evaluate_multiple_assets(
+    asset_predictions=assets_data,
+    print_results=True
+)
+```
+
+### Direct Class Usage
+
+```python
+from evaluate_torch_optimized import TorchModelEvaluator
+
+evaluator = TorchModelEvaluator()
+
+# Calculate individual metrics
+reg_metrics = evaluator.evaluate_regression(actual, predicted)
+cls_metrics = evaluator.evaluate_classification(actual, predicted)
+ic = evaluator.calculate_ic(actual, predicted)
+```
+
+### Basic Evaluation (Sklearn Version)
+
 ```python
 from eval.model_evaluation import evaluate_predictions
 import numpy as np
@@ -33,34 +80,17 @@ y_pred = np.array([101, 101, 103, 104, 102])  # Predicted prices
 results = evaluate_predictions(y_true, y_pred)
 ```
 
-### Multiple Assets Evaluation
-```python
-from eval.model_evaluation import evaluate_multiple_assets
+## Key Features
 
-assets = {
-    'AAPL': (actual_aapl, predicted_aapl),
-    'GOOGL': (actual_googl, predicted_googl),
-    'MSFT': (actual_msft, predicted_msft)
-}
+- **Financial-specific metrics**: IC, Rank IC, and IR metrics specifically designed for financial modeling
+- **Direction prediction**: Converts continuous predictions to binary up/down movements
+- **Robust error handling**: Handles NaN values and edge cases gracefully
+- **Batch processing**: Supports evaluation of multiple assets simultaneously
+- **GPU compatibility**: PyTorch version can leverage GPU acceleration
 
-multi_results = evaluate_multiple_assets(assets)
-```
+## Performance Considerations
 
-### Using the Evaluator Class Directly
-```python
-from eval.model_evaluation import ModelEvaluator
-
-evaluator = ModelEvaluator()
-
-# Get regression metrics only
-reg_metrics = evaluator.evaluate_regression(y_true, y_pred)
-
-# Get classification metrics only
-clf_metrics = evaluator.evaluate_classification(y_true, y_pred)
-
-# Get all metrics
-all_metrics = evaluator.evaluate_all(y_true, y_pred)
-```
+While the PyTorch evaluator provides better integration with deep learning workflows, note that for small datasets the sklearn version may be faster due to overhead in initializing PyTorch tensors. The PyTorch version becomes more beneficial when working with large datasets or when GPU acceleration is available.
 
 ## Integration with Kronos Model
 
@@ -87,6 +117,7 @@ results = evaluate_predictions(actual_values, predicted_values)
 
 - **Regression Metrics**: Essential for measuring the accuracy of price/volume forecasts
 - **Classification Metrics**: Important for directional prediction (will price go up or down?)
+- **Financial Metrics (IC/IR)**: Critical for quantifying the predictive power of factors and strategy effectiveness
 - **Financial Applications**: Particularly useful for evaluating trading strategy effectiveness
 
 The evaluation framework considers the unique challenges of financial data including high noise levels, non-stationarity, and the importance of directional accuracy over exact price prediction.
